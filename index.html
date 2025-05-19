@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>Meta Generative AI</h2>
+    <div id="chat"></div>
+    <input id="userInput" placeholder="Ask me anything..." />
+    <button onclick="send()">Send</button>
+
+    <script>
+      const chat = document.getElementById("chat");
+
+      function add(role, text) {
+        chat.innerHTML += `<p>${role}: ${text}</p>`;
+      }
+
+      const apiKey = "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";
+
+      async function send() {
+        const msg = userInput.value;
+        add("You", msg);
+        userInput.value = "";
+
+        const res = await fetch(
+          "https://api.groq.com/openai/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + apiKey,
+            },
+            body: JSON.stringify({
+              model: "meta-llama/llama-4-scout-17b-16e-instruct",
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "Bạn là một trợ lý AI thông minh, trả lời ngắn gọn, rõ ràng, lịch sự và thân thiện. Trả lời bằng tiếng Việt, súc tích và chuyên nghiệp. Giải thích đơn giản, dễ hiểu như dạy người mới bắt đầu. Trả lời như một lập trình viên có kinh nghiệm 10 năm.",
+                },
+                {
+                  role: "user",
+                  content: msg,
+                },
+              ],
+            }),
+          }
+        );
+        const data = await res.json();
+        add("AI", data.choices[0].message.content);
+      }
+    </script>
+  </body>
+</html>
